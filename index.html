@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Scrapbook — Diary Flipbook</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Gloria+Hallelujah&family=Permanent+Marker&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Camera feed (hidden, used by MediaPipe) -->
+    <video id="vid" autoplay playsinline></video>
+    <!-- Full-screen camera canvas (background) -->
+    <canvas id="camera-canvas"></canvas>
+
+    <!-- UI Overlay -->
+    <div class="page-counter" id="page-counter">1 / 8</div>
+    <button class="nav-btn prev-btn" id="prev-btn" style="display:none">‹</button>
+    <button class="nav-btn next-btn" id="next-btn">›</button>
+
+    <!-- Drawing mode indicator -->
+    <div class="mode-indicator" id="mode-indicator">
+        <span class="mode-dot"></span>
+        <span id="mode-text">Point to move cursor</span>
+    </div>
+
+    <!-- Color palette (right side, like screen_writing) -->
+    <div class="color-palette" id="color-palette">
+        <div class="color-swatch active" data-color="#2c1810" style="background:#2c1810" title="Dark Brown"></div>
+        <div class="color-swatch" data-color="#d63031" style="background:#d63031" title="Red"></div>
+        <div class="color-swatch" data-color="#0984e3" style="background:#0984e3" title="Blue"></div>
+        <div class="color-swatch" data-color="#00b894" style="background:#00b894" title="Green"></div>
+        <div class="color-swatch" data-color="#6c5ce7" style="background:#6c5ce7" title="Purple"></div>
+        <div class="color-swatch" data-color="#fdcb6e" style="background:#fdcb6e" title="Gold"></div>
+        <div class="color-swatch" data-color="#e84393" style="background:#e84393" title="Pink"></div>
+        <div class="color-swatch eraser-swatch" data-color="eraser" title="Eraser">✕</div>
+    </div>
+
+    <!-- Pen size controls -->
+    <div class="pen-controls" id="pen-controls">
+        <div class="pen-size-btn" data-size="3">
+            <div class="size-dot" style="width:4px;height:4px"></div>
+        </div>
+        <div class="pen-size-btn active" data-size="6">
+            <div class="size-dot" style="width:8px;height:8px"></div>
+        </div>
+        <div class="pen-size-btn" data-size="12">
+            <div class="size-dot" style="width:14px;height:14px"></div>
+        </div>
+    </div>
+
+    <!-- Clear page button -->
+    <button class="clear-btn" id="clear-btn" title="Clear current page">🗑️ Clear Page</button>
+
+    <!-- Snap Photo button -->
+    <button class="snap-btn" id="snap-btn" title="Snap a photo onto this page">📸 Snap Photo</button>
+
+    <!-- Add Page button -->
+    <button class="add-page-btn" id="add-page-btn" title="Add a new page">➕ Add Page</button>
+
+    <!-- Camera error fallback (#6) -->
+    <div class="camera-error" id="camera-error" style="display:none">
+        <span class="camera-error-icon">📷</span>
+        <span>Camera unavailable — flipbook still works!</span>
+    </div>
+
+    <!-- ═══════════════════════════════
+         BOOK STRUCTURE
+    ═══════════════════════════════ -->
+    <div class="book-wrap" id="book-wrap">
+
+        <!-- ═══ LEAF 1: Cover / Page 1 ═══ -->
+        <div class="leaf" id="leaf1">
+            <div class="leaf-face front-face">
+                <div class="page-content cover-page">
+                    <div class="washi-tape tape-top"></div>
+                    <div class="cover-deco">
+                        <div class="cover-icon">📖</div>
+                        <h1 class="cover-title">My Scrapbook</h1>
+                        <p class="cover-subtitle">a little diary</p>
+                        <div class="cover-date" id="cover-date"></div>
+                        <div class="cover-hint">draw in the air with your hand ✋<br>hold <kbd>Shift</kbd> to write</div>
+                    </div>
+                    <div class="washi-tape tape-bottom"></div>
+                    <div class="corner-fold"></div>
+                </div>
+            </div>
+            <div class="leaf-face back-face">
+                <div class="page-content diary-page" data-page="1">
+                    <div class="page-header">
+                        <span class="page-date">Page 1</span>
+                        <div class="sticker sticker-star">⭐</div>
+                    </div>
+                    <canvas class="draw-canvas" data-page="1"></canvas>
+                    <div class="page-lines"></div>
+                    <div class="washi-tape tape-corner-r"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ LEAF 2: Page 2 / Page 3 ═══ -->
+        <div class="leaf" id="leaf2">
+            <div class="leaf-face front-face">
+                <div class="page-content diary-page" data-page="2">
+                    <div class="page-header">
+                        <span class="page-date">Page 2</span>
+                        <div class="sticker sticker-heart">💕</div>
+                    </div>
+                    <canvas class="draw-canvas" data-page="2"></canvas>
+                    <div class="page-lines"></div>
+                    <div class="washi-tape tape-side"></div>
+                </div>
+            </div>
+            <div class="leaf-face back-face">
+                <div class="page-content diary-page" data-page="3">
+                    <div class="page-header">
+                        <span class="page-date">Page 3</span>
+                        <div class="sticker sticker-flower">🌸</div>
+                    </div>
+                    <canvas class="draw-canvas" data-page="3"></canvas>
+                    <div class="page-dots"></div>
+                    <div class="washi-tape tape-corner-l"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ LEAF 3: Page 4 / Page 5 ═══ -->
+        <div class="leaf" id="leaf3">
+            <div class="leaf-face front-face">
+                <div class="page-content diary-page" data-page="4">
+                    <div class="page-header">
+                        <span class="page-date">Page 4</span>
+                        <div class="sticker sticker-cat">🐱</div>
+                    </div>
+                    <canvas class="draw-canvas" data-page="4"></canvas>
+                    <div class="page-lines"></div>
+                    <div class="tape-strip"></div>
+                </div>
+            </div>
+            <div class="leaf-face back-face">
+                <div class="page-content diary-page" data-page="5">
+                    <div class="page-header">
+                        <span class="page-date">Page 5</span>
+                        <div class="sticker sticker-moon">🌙</div>
+                    </div>
+                    <canvas class="draw-canvas" data-page="5"></canvas>
+                    <div class="page-grid"></div>
+                    <div class="washi-tape tape-top tape-alt"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ LEAF 4: Page 6 / Back Cover ═══ -->
+        <div class="leaf" id="leaf4">
+            <div class="leaf-face front-face">
+                <div class="page-content diary-page" data-page="6">
+                    <div class="page-header">
+                        <span class="page-date">Page 6</span>
+                        <div class="sticker sticker-sun">☀️</div>
+                    </div>
+                    <canvas class="draw-canvas" data-page="6"></canvas>
+                    <div class="page-lines"></div>
+                    <div class="washi-tape tape-corner-r tape-pink"></div>
+                </div>
+            </div>
+            <div class="leaf-face back-face">
+                <div class="page-content back-cover">
+                    <div class="washi-tape tape-top tape-alt"></div>
+                    <div class="back-deco">
+                        <div class="back-icon">✨</div>
+                        <p class="back-text">the end<br><span class="back-small">for now...</span></p>
+                        <button class="restart-btn" id="restart-btn">↩ start over</button>
+                    </div>
+                    <div class="corner-fold flip"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MediaPipe + Hand Tracking -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
