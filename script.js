@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const restartBtn = document.getElementById('restart-btn');
     const modeIndicator = document.getElementById('mode-indicator');
     const modeText = document.getElementById('mode-text');
+    const drawToggleBtn = document.getElementById('draw-toggle-btn');
     const clearBtn = document.getElementById('clear-btn');
     const coverDate = document.getElementById('cover-date');
     const cameraError = document.getElementById('camera-error');
@@ -704,13 +705,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ══════════════════════════════════
-    // KEYBOARD
+    // KEYBOARD & MOBILE DRAW TOGGLE
     // ══════════════════════════════════
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Shift') {
-            shiftDown = true;
+
+    function setDrawingMode(isDrawing) {
+        shiftDown = isDrawing;
+        if (isDrawing) {
             modeIndicator.classList.add('drawing');
             modeText.textContent = isEraser ? '✋ Erasing...' : '✋ Drawing...';
+            if (drawToggleBtn) drawToggleBtn.classList.add('active');
+        } else {
+            modeIndicator.classList.remove('drawing');
+            modeText.textContent = 'Point to move cursor';
+            if (drawToggleBtn) drawToggleBtn.classList.remove('active');
+        }
+    }
+
+    if (drawToggleBtn) {
+        // Tap to toggle
+        drawToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setDrawingMode(!shiftDown);
+        });
+
+        // Or press and hold like a shift key
+        drawToggleBtn.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            setDrawingMode(true);
+        }, { passive: true });
+
+        drawToggleBtn.addEventListener('touchend', (e) => {
+            e.stopPropagation();
+            setDrawingMode(false);
+        }, { passive: true });
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Shift') {
+            setDrawingMode(true);
         }
         if (e.code === 'Space') {
             e.preventDefault();
@@ -728,9 +760,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('keyup', (e) => {
         if (e.key === 'Shift') {
-            shiftDown = false;
-            modeIndicator.classList.remove('drawing');
-            modeText.textContent = 'Point to move cursor';
+            setDrawingMode(false);
         }
     });
 
