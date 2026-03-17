@@ -13,24 +13,18 @@
 
 <body>
 
-    <!-- Camera feed (hidden, used by MediaPipe) -->
     <video id="vid" autoplay playsinline></video>
-    <!-- Full-screen camera canvas (background) -->
     <canvas id="camera-canvas"></canvas>
-
-    <!-- UI Overlay -->
     <div class="page-counter" id="page-counter">1 / 8</div>
     <button class="nav-btn prev-btn" id="prev-btn" style="display:none">‹</button>
     <button class="nav-btn next-btn" id="next-btn">›</button>
 
-    <!-- Drawing mode indicator -->
     <div class="mode-indicator" id="mode-indicator">
         <span class="mode-dot"></span>
         <span id="mode-text">Point to move cursor</span>
         <button id="draw-toggle-btn" class="draw-toggle-btn" title="Toggle drawing mode">Draw ✏️</button>
     </div>
 
-    <!-- Color palette (right side, like screen_writing) -->
     <div class="color-palette" id="color-palette">
         <div class="color-swatch active" data-color="#2c1810" style="background:#2c1810" title="Dark Brown"></div>
         <div class="color-swatch" data-color="#d63031" style="background:#d63031" title="Red"></div>
@@ -42,7 +36,6 @@
         <div class="color-swatch eraser-swatch" data-color="eraser" title="Eraser">✕</div>
     </div>
 
-    <!-- Pen size controls -->
     <div class="pen-controls" id="pen-controls">
         <div class="pen-size-btn" data-size="3">
             <div class="size-dot" style="width:4px;height:4px"></div>
@@ -55,27 +48,19 @@
         </div>
     </div>
 
-    <!-- Clear page button -->
     <button class="clear-btn" id="clear-btn" title="Clear current page">🗑️ Clear Page</button>
 
-    <!-- Snap Photo button -->
     <button class="snap-btn" id="snap-btn" title="Snap a photo onto this page">📸 Snap Photo</button>
 
-    <!-- Add Page button -->
     <button class="add-page-btn" id="add-page-btn" title="Add a new page">➕ Add Page</button>
 
-    <!-- Camera error fallback (#6) -->
     <div class="camera-error" id="camera-error" style="display:none">
         <span class="camera-error-icon">📷</span>
         <span>Camera unavailable — flipbook still works!</span>
     </div>
 
-    <!-- ═══════════════════════════════
-         BOOK STRUCTURE
-    ═══════════════════════════════ -->
     <div class="book-wrap" id="book-wrap">
 
-        <!-- ═══ LEAF 1: Cover / Page 1 ═══ -->
         <div class="leaf" id="leaf1">
             <div class="leaf-face front-face">
                 <div class="page-content cover-page">
@@ -104,7 +89,6 @@
             </div>
         </div>
 
-        <!-- ═══ LEAF 2: Page 2 / Page 3 ═══ -->
         <div class="leaf" id="leaf2">
             <div class="leaf-face front-face">
                 <div class="page-content diary-page" data-page="2">
@@ -130,7 +114,6 @@
             </div>
         </div>
 
-        <!-- ═══ LEAF 3: Page 4 / Page 5 ═══ -->
         <div class="leaf" id="leaf3">
             <div class="leaf-face front-face">
                 <div class="page-content diary-page" data-page="4">
@@ -156,7 +139,6 @@
             </div>
         </div>
 
-        <!-- ═══ LEAF 4: Page 6 / Back Cover ═══ -->
         <div class="leaf" id="leaf4">
             <div class="leaf-face front-face">
                 <div class="page-content diary-page" data-page="6">
@@ -184,7 +166,6 @@
 
     </div>
 
-    <!-- MediaPipe + Hand Tracking -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
         crossorigin="anonymous"></script>
